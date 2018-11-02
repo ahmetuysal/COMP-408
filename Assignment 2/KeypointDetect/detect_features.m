@@ -92,7 +92,7 @@ function [features, pyr, imp]  = detect_features(img, scl, disp_flag, thresh, ra
     
     % Get the feature points
     pts = find_features(pyr,img,scl,thresh,radius,radius2,disp_flag,1);
-
+    
     %classify points and create sub-pixel and sub-scale adjustments 
     [features, ~] = refine_features(img,pyr,scl,imp,pts,radius3,min_sep,edgeratio);
 end

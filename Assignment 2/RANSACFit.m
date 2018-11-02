@@ -96,7 +96,6 @@ for i = 1 : maxIter
     
     H = ComputeAffineMatrix( p1(seed_group(:, 1), :), p2(seed_group(:, 2), :) );
     
-    
     % ===================================================
     % Step 2:
     % ===================================================
@@ -105,13 +104,6 @@ for i = 1 : maxIter
     % coded. You need to complete it.
     
     err = ComputeError(H, p1(non_seed_group(:, 1), :), p2(non_seed_group(:, 2),:));
-    
-%     disp('p1')
-%     disp(p1)
-%     disp('p1 nonseed 1')
-%     disp(p1(non_seed_group(:, 1), :))
-%     disp('p1 nonseed 2')
-%     disp(p1(non_seed_group(1,1)))
     
     %=======================================================
     % Step 3:
@@ -132,21 +124,10 @@ for i = 1 : maxIter
     number_of_inliers = size(inliers,1) + size(seed_group,1);
     if( number_of_inliers > goodFitThresh )
         
-        %disp('----SEED----')
-        %disp(seed_group)
-        %disp('----NONSEED----')
-        %disp(inliers)
-        % =================================================
-        % Step 4:
-        % =================================================
-        % Re-compute transformation matrix on all inliers
-        % Re-compute the error with all these inliers.
-        % Save the transformation matrix in H_best variable if fitting
-        % error is minimum till this iteration
         all_inliers = [seed_group ; inliers];
         H = ComputeAffineMatrix( p1(all_inliers(:, 1), :), p2(all_inliers(:, 2), :) );
-        disp(all_inliers)
         err = ComputeError(H, p1(all_inliers(:, 1), :), p2(all_inliers(:, 2),:));
+        % I used sum of squares of errors to evaluate H
         sum_err_squares = err' * err;
         
         if(sum_err_squares < min_error)
@@ -155,10 +136,6 @@ for i = 1 : maxIter
         end
     end
 end
-
-disp(H_best)
-disp('Min error')
-disp(min_error)
 
 if sum(sum((H_best - eye(3)).^2)) == 0,
     disp('No RANSAC fit was found.')
@@ -209,8 +186,6 @@ H(3,:) = [0 0 1];
 end
 
 
-
-% I added match matrix myself as input
 function dists = ComputeError(H, pt1, pt2)
 % Compute the error using transformation matrix H to
 % transform the point in pt1 to its matching point in pt2.
@@ -244,27 +219,13 @@ dists = zeros(size(pt1,1),1);
 % pt1(match(2,1),:), etc. (You may use 'for' loops if this is too
 % confusing, but understanding it will make your code simple and fast.)
 
-
-
-%match_points_pic1 = pt1(match(:, 1), :);
-%match_points_pic2 = pt2(match(:, 2), :);
-%distances = match_points_pic1 - match_points_pic2;
-
 % Convert the input points to homogeneous coordintes.
-
 pt1_homogeneous = [pt1' ; ones(1, length(pt1))];
 pt2_homogeneous = [pt2' ; ones(1, length(pt2))];
 
-%disp(H)
-%disp(pt1_homogeneous)
-
 pt1_transformed = (H * pt1_homogeneous);
 
-%disp(pt1_transformed)
-
 distances = pt1_transformed - pt2_homogeneous;
-
-%disp(distances)
 
 distances_x = distances(1, :);
 distances_y = distances(2, :);
@@ -274,8 +235,6 @@ distances_y = distances(2, :);
 % transpose the vector to satify documentation (return M x 1 matrix). 
 dists = sqrt(distances_x .* distances_x + distances_y .* distances_y)';
 
-
-%disp(dists)
 
 if size(dists,1) ~= size(pt1,1) || size(dists,2) ~= 1
     error('wrong format');

@@ -145,11 +145,11 @@ y = [ P1(2,matches(1,:)) ; P2(2,matches(2,:))+oi ; nans ] ;
 
 % if interactive > 1 we do not drive lines, but just points.
 if(interactive > 1)
-  h = plot(x(:),y(:),'g.') ;
+  h = plot(x(:),y(:),'r.') ;
 else
   h = line(x(:)', y(:)') ;
 end
-set(h,'Marker','.','Color','g') ;
+set(h,'Marker','.','Color','r', 'MarkerSize', 10) ;
 
 % --------------------------------------------------------------------
 %                                                          Interactive

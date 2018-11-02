@@ -173,5 +173,4 @@ elseif (currentFrameIndex > refFrameIndex)
       T =  pinv(i_To_iPlusOne_Transform{i}) * T;
     end
 end
-disp(T)
 end

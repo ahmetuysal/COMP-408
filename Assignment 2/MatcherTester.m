@@ -3,8 +3,8 @@ clc; close all; clc;
 %% Add path
 addpath('KeypointDetect');
 %% Load image
-img1 = imread('./data/uttower2.jpg');
-img2 = imread('./data/uttower1.jpg');
+img1 = imread('./data/uttower2_scaledup.jpg');
+img2 = imread('./data/uttower2.jpg');
 
 %% Feature detection
 [feature1, pyr1, imp1] = detect_features(img1);

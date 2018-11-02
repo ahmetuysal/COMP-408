@@ -275,30 +275,35 @@ angle_step = 2 * pi / num_bins;
 angles = 0 : angle_step : (2*pi-angle_step);
 histogram = zeros(1, num_bins);
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                              %
 %                                YOUR CODE HERE:                               %
-%
-%
-%                                                                              %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+% get sizes to use in loops
 [size_x, size_y] = size(gradient_angles);
 
+% iterate over all angles
 for gradient_index_x = 1:size_x
     for gradient_index_y = 1:size_y
         grad_angle = gradient_angles(gradient_index_x, gradient_index_y);
+        % start checking from biggest bin
         for angle_index = length(angles):-1:1
             if(grad_angle >= angles(angle_index))
+                % update the bin value
                 histogram(angle_index) = histogram(angle_index)...
                     + gradient_magnitudes(gradient_index_x, gradient_index_y);
+                % we are done if our angle is bigger than or equal to bin
+                % lower bound
                 break
             end
         end
     end
 end
+%
+%
+%                                                                              %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 end
 
 function descriptor = ComputeSIFTDescriptor...
@@ -316,6 +321,15 @@ function descriptor = ComputeSIFTDescriptor...
 
 % initialize descriptor to size 0
 descriptor = [];
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                              %
+%                             YOUR CODE HERE:                                  %
+%                                                                              %
+%         Compute the gradient histograms and concatenate them in the          %
+%  feature variable to form a size 1x128 SIFT descriptor for this keypoint.    %
+%                                                                              %
+%            HINT: Use the ComputeGradientHistogram function below.            %
 
 % I first used this code but I changed it when I saw autograder gave error
 % but, visual representation was accurate. So, I changed the order and 
@@ -352,15 +366,6 @@ for x = 1 : grid_size
         descriptor = [descriptor, cell_gradient_histogram];
     end
 end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                              %
-%                             YOUR CODE HERE:                                  %
-%                                                                              %
-%         Compute the gradient histograms and concatenate them in the          %
-%  feature variable to form a size 1x128 SIFT descriptor for this keypoint.    %
-%                                                                              %
-%            HINT: Use the ComputeGradientHistogram function below.            %
 %                                                                              %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

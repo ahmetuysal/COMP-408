@@ -27,7 +27,10 @@ function match = SIFTSimpleMatcher(descriptor1, descriptor2, thresh)
 
     match = [];
     
-    for i = 1:length(descriptor1)
+    %Get the number of descriptors for iterating
+    [ld1, ~] = size(descriptor1);
+    [ld2, ~] = size(descriptor2);
+    for i = 1:ld1
         sift_desc_1 = descriptor1(i, :);
         %initilialize distances with infinity
         smallest = inf;
@@ -37,7 +40,7 @@ function match = SIFTSimpleMatcher(descriptor1, descriptor2, thresh)
         % this implementation assumes there are at least two descriptors
         % in second array, smallest variables are wrong until first two
         % iterations
-        for j = 1: length(descriptor2)
+        for j = 1: ld2
             sift_desc_2 = descriptor2(j, :);
             distances = sift_desc_1 - sift_desc_2;
             % dot product of row vector of distances with its transpose is

@@ -36,9 +36,9 @@ for i=1:size(p,1)
        
     if num_flag ~= 1
         % Ahmet: original g+
-        plot(x,y,'r.', 'MarkerSize', 15);         %draw box around real feature
+        plot(x,y,'r.', 'MarkerSize', 10);         %draw box around real feature
     else
-        plot(x,y,'r.10', 'MarkerSize', 15); 
+        plot(x,y,'r.10', 'MarkerSize', 10); 
         text(x,y,sprintf('%d',i),'color','m');
     end
         
