@@ -134,11 +134,13 @@ The code for this part was given in the assignment. Basically, differences of Ga
 \caption{Visualization of key points extracted for different scales and orientations.}
 \end{figure}
 
+As seen from the extracted features, we got different features when the scale of the image has changed. Our algorithm solves this problem by calculating the features at different scales (Pyramids) and associating the corners with their best scale.
+
 \newpage
 
 \section{Feature Description}
 \subsection{Algorithm}
-For the second part we need to create SIFT descriptors from our key points. For this purpose, we will implement the algorithm from David G. Lowe's paper \href{``https://www.cs.ubc.ca/~lowe/papers/ijcv04.pdf}{Distinctive Image Features from Scale-Invariant Keypoints''}.
+For the second part we need to create SIFT descriptors from our key points. For this purpose, we will implement the algorithm from David G. Lowe's paper ``\href{https://www.cs.ubc.ca/~lowe/papers/ijcv04.pdf}{Distinctive Image Features from Scale-Invariant Keypoints}''.
 In summary, for each key point we detected from part one, we need to 
 \begin{enumerate}
 \item Take a NxN window around the key point, and normalize it to 16x16, where N is proportional to scale of key point.
@@ -669,23 +671,108 @@ end
 \begin{figure}[!htb]
   \centering
   \includegraphics[width=.99\textwidth]{yosemite_pano.jpg}
-  \caption{Stitched image of Mount Yosemite from multiple images.}
+  \caption{Stitched panoramic image of Mount Yosemite from multiple images.}
 \end{figure}%
 \begin{figure}[!htb]
   \centering
   \includegraphics[width=.99\textwidth]{campus_pano.jpg}
-  \caption{Stitched image of campus from multiple images..}
+  \caption{Stitched panoramic image of campus from multiple images..}
 \end{figure}%
 \newpage
 \begin{figure}[!htb]
   \centering
   \includegraphics[width=.99\textwidth]{yard_pano.jpg}
-  \caption{Stitched image of yard from multiple images.}
+  \caption{Stitched panoramic image of given yard from multiple images.}
 \end{figure}%
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[width=.99\textwidth]{sci_pano.jpg}
+  \caption{Stitched panoramic image of Koç University Science Courtyard from multiple images.}
+\end{figure}%
+
+\newpage
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[width=.99\textwidth]{chair_pano.jpg}
+  \caption{Stitched panoramic image from Koç University Campus from multiple images.}
+\end{figure}%
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[width=.99\textwidth]{hf_pano.jpg}
+  \caption{Stitched panoramic image of Koç University Henry Ford Building from multiple images.}
+\end{figure}%
+
+\newpage
+
 \section{Principal Component Analysis}
 
+We have K=3 observations of a two-dimensional random data vector f are given as $f_1=(1,0)$, $f_2 =(0,1)$ and $f_3 = (0,-1)$.
 
+\subsection{Question 1}
+Find the direction $v_1$ that described the data, i.e, satisfies given condition using Lagrange Multipliers method.
 
+\begin{equation*}
+ v_1= \operatorname*{arg\,max}_{||v||=1} \sum_{n=1}^{K} (f_k v^T)^2
+\end{equation*} 
 
+\noindent{\bf Solution:}\\
+\begin{equation*}
+Let \quad v = \begin{bmatrix}v_x\\v_y\end{bmatrix} \quad \textrm{then} \quad \sum_{n=1}^{K} (f_k v^T)^2 = (\begin{bmatrix}1\\0\end{bmatrix}  \begin{bmatrix}v_x & v_y\end{bmatrix})^2 +  (\begin{bmatrix}0\\1\end{bmatrix} \begin{bmatrix}v_x & v_y\end{bmatrix})^2 +  (\begin{bmatrix}0\\-1\end{bmatrix} \begin{bmatrix}v_x & v_y\end{bmatrix})^2 = {v_x}^2 + 2 {v_y}^2
+\end{equation*} 
+So, we can maximize this value using Lagrange Multipliers method with the given constraint.
+\begin{gather*}
+f(v_x, v_y) = {v_x}^2\! +2{v_y}^2 \quad \text{is subject to constraint} \quad {v_x}^2\! +{v_y}^2 = 1 \\
+F(v_x, v_y,\lambda) =  {v_x}^2\! +2{v_y}^2 - \lambda ({v_x}^2\! +{v_y}^2 - 1) \quad \text{we need to solve for} \quad  F_{v_x} = 0, \quad F_{v_y} = 0, \quad F_{\lambda} = 0 \\
+\frac{\partial{F}}{\partial{v_x}} = 2 v_x - \lambda 2 v_x = 0 \implies \lambda_1 = 1\\
+\frac{\partial{F}}{\partial{v_x}} = 4 v_y - \lambda 2 v_y = 0 \implies \lambda_2 = 2\\
+\frac{\partial{F}}{\partial{\lambda}} = {v_x}^2 + {v_y}^2 - 1 = 0 \quad \text{initial constraint.}
+\end{gather*} 
 
+When we put $\lambda_2$ in to F we get,
+
+\begin{equation*}
+f(v_x, v_y, 2) =-{v_x}^2 + 2
+\end{equation*}
+
+So, we need to select $v_x$ = 0 to maximize the value. Combined with our constraint this gives us our eigenvector corresponding to eigenvalue 2 as $$\begin{bmatrix}0\\1\end{bmatrix} $$
+
+\subsection{Question 2}
+Find the principal eigenvector of the correlation matrix of f, that is the one associated with the largest eigenvalue. Show that it is equal to the solution of the above optimization problem.\\
+\noindent{\bf Solution:}\\
+We can find correlation matrix as $D^{T}$D, where D consist of our $f_i$ vectors.
+\begin{gather*}
+D = \begin{bmatrix}1&0\\0&1\\0&-1\end{bmatrix} \quad \implies C = D^T D = \begin{bmatrix}1&0&0\\0&1&-1\end{bmatrix} \begin{bmatrix}1&0\\0&1\\0&-1\end{bmatrix} =  \begin{bmatrix}1&0\\0&2\end{bmatrix}
+\end{gather*}
+
+We will find all eigenvalues $\lambda$ such that the matrix $A-\lambda I$ 
+is not invertible.  To do so, we perform row and column operations 
+on the matrix $C-\lambda I$ as follows:  
+\[
+C-\lambda I=\begin{bmatrix}1-\lambda&0\\0&2-\lambda\end{bmatrix}
+\]
+It is easy now to see that $C-\lambda I$ is singular if and only if $(1-\lambda)(2-\lambda)=0$, and this means that the eigenvalues of $C$ are $1$ and $2$.  
+
+To find the eigenvector associated with the largest eigenvalue, we must find vectors x which satisfy $(C - \lambda I)x $= 0 for largest eigenvalue.
+So, we must first form the matrix C - 2I. and then construct the augmented matrix (C - 2I : 0) and convert it to row reduced echelon form.
+
+\begin{gather*}
+C - 2I = \begin{bmatrix}-1&0\\0&0\end{bmatrix} \implies C = D^T D = \begin{bmatrix}-1&0&0\\0&0&0\end{bmatrix} \implies \begin{bmatrix}1&0&0\\0&0&0\end{bmatrix} \implies x_1 = 0
+\end{gather*}
+
+Since we know the length of the v must be 1, we conclude $v_1$ =  $$\begin{bmatrix}0\\1\end{bmatrix} $$
+
+As seen from calculations, result is equal to result of optimization problem.
+\\
+\noindent{\bf Note:} For both part 1 and 2 choosing $v_y$ = -1 also satisfies the given conditions. I preferred 1 for simplicity.
+
+\subsection{Question 3}
+Compute also the average (mean) of the three data vectors provided. Compare the resulting mean vector with $v_1$ . Are they equal? \\
+\noindent{\bf Solution:}\\
+The average of the given data vectors is
+\begin{gather*}
+\frac{f_1 + f_2 + f_3}{3} = \begin{bmatrix}\frac{1}{3}\\0\end{bmatrix} \quad where \quad v_1 = \begin{bmatrix}0\\1\end{bmatrix}
+\end{gather*}
+So, they are not equal.
 \end{document}
