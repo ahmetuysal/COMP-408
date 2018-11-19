@@ -28,15 +28,43 @@ function [accuracy,recall,tn_rate,precision] = classifier_performance(svmClassif
 %   Precision: When it predicts face, how often is it correct?
 %       precision = TP/predicted_yes = TP/(TP+FP)
 
+% initialize counters
+true_positive = 0;
+false_negative = 0;
+false_positive = 0;
+true_negative = 0;
 
-% remove this placeholder
-accuracy=0; recall=0; tn_rate=0; precision=0;
+% extract weights and bias
+w = svmClassifier.weights;
+b = svmClassifier.bias;
 
-%===================================================================
+% check for positive images
+for i = 1:length(features_pos)
+   if features_pos(i) * w + b >= 0
+       % face is recognized as face: increase true positive
+       true_positive = true_positive + 1;
+   else
+       % face is not recognized: increase false negative
+       false_negative = false_negative +1;
+   end
+end
 
-%        YOUR CODE GOES HERE
+% check for negative images
+for i = 1:length(features_neg)
+   if features_pos(i) * w + b >= 0
+       % non-face recognized as face: increase false positive
+       false_positive = false_positive + 1;
+   else
+       % non-face is not recognized: increase true negative
+       true_negative = true_negative +1;
+   end
+end
 
-
-%==================================================================
+% calculate values from counters
+accuracy = (true_positive + true_negative) /...
+    (true_positive + true_negative + false_positive + false_negative);
+recall = true_positive / (true_positive + false_negative);
+tn_rate = true_negative / (true_negative + false_positive);
+precision = true_positive / (true_positive + false_positive);
 
 end
