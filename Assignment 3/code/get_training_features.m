@@ -49,33 +49,27 @@ face_images = zeros([size(first_img), num_images], 'like', first_img);
 
 % store the images to use in warping
 for i = 1:num_images
-   face_images(:, :, i) = imread(strcat(image_files(1).folder, '\',...
-       image_files(1).name)); 
+   face_images(:, :, i) = imread(strcat(image_files(i).folder, '\',...
+       image_files(i).name)); 
 end
 
 
 % % Part for warping
-% 
-% tform_reflection = affine2d([ -1 0 0; 0 1 0; 0 0 1]);
-% tform_shear = affine2d( [1 .5 0; 0 1 0; 0 0 1]);
-% tform = affine2d([ 0.5*cos(pi/4) sin(pi/4)     0;
-%                   -sin(pi/4)     0.5*cos(pi/4) 0;
-%                    0             0             1]);
-%                
-% first_img = imread(strcat(image_files(1).folder, '\', image_files(1).name));
-%                               
-% warper = images.geotrans.Warper(tform, size(first_img));
-% 
-% %imr = zeros([warper.OutputSize 1 num_images],'like',first_img);
-% 
-% disp(warper.OutputSize)
-% 
-% imshow(warp(warper, first_img))
-%imshow(first_img)
- 
-% initialize features_pos with zeros
-features_pos = zeros(num_images, (hog_template_size / hog_cell_size)^2 * 31);
+% create affine2d objects used for warping
+% for reflecting
+tform_reflection = affine2d([ -1 0 0; 0 1 0; 0 0 1]);
+tform_shear = affine2d( [1 .5 0; 0 1 0; 0 0 1]);
+tform = affine2d([ 0.5*cos(pi/4) sin(pi/4)     0;
+                  -sin(pi/4)     0.5*cos(pi/4) 0;
+                   0             0             1]);
+               
+transforms = [tform_reflection, tform_shear, tform];
 
+% initialize features_pos with zeros
+features_pos = zeros(num_images * (1 + length(transforms))...
+    , (hog_template_size / hog_cell_size)^2 * 31);
+
+% put the HoG for original face images 
 for i = 1:num_images
     % calculate the HoG for face image
     hog = vl_hog(im2single(face_images(:, :, i)), hog_cell_size);
@@ -83,6 +77,21 @@ for i = 1:num_images
     features_pos(i, :) = hog(:);
 end
 
+% iterate over all transforms and add HoG for warped faces
+for i = 1:length(transforms)
+    transform = transforms(1);
+    warper = images.geotrans.Warper(transform, size(first_img));
+    for j = 1:num_images
+        % calculate the warped image
+        warped_image = warp(warper, face_images(:, :, j));
+        % resize the warped image to 36x36
+        warped_image = imresize(warped_image, [36, 36]);
+        % calculate the HoG for the warped face image
+        hog = vl_hog(im2single(warped_image), hog_cell_size);
+        % add the result to features_pos
+        features_pos(i*num_images + j, :) = hog(:);
+    end
+end
 
 %% Step 2: Mine Negative Samples (non-face) and determine hog features
 
