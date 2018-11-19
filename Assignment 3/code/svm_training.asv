@@ -26,8 +26,7 @@ X = [ features_pos ; features_neg ];
 % create the label vector for indicating positive or negative feature 
 Y = [ones(1, length(features_pos)) ,  -ones(1, length(features_neg))];
 lambda = 0.00001;
-% Function wants an D by N matrix (D: feature dimensions, N: feature count)
-% so input the transpose of X
+% Function wants an D by N matrix (D: feature dimensions, N
 [w, b] = vl_svmtrain(X', Y, lambda);
 
 svmClassifier = struct('weights',w,'bias',b);
