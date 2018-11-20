@@ -38,9 +38,11 @@ true_negative = 0;
 w = svmClassifier.weights;
 b = svmClassifier.bias;
 
+disp(features_pos(1, :) * w)
+
 % check for positive images
 for i = 1:length(features_pos)
-   if features_pos(i) * w + b >= 0
+   if features_pos(i, :) * w + b >= 0
        % face is recognized as face: increase true positive
        true_positive = true_positive + 1;
    else
@@ -51,7 +53,7 @@ end
 
 % check for negative images
 for i = 1:length(features_neg)
-   if features_pos(i) * w + b >= 0
+   if features_neg(i, :) * w + b >= 0
        % non-face recognized as face: increase false positive
        false_positive = false_positive + 1;
    else
