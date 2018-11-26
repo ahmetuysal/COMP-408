@@ -90,6 +90,7 @@ disp(['accuracy = ',num2str(accuracy),', recall = ',num2str(recall),...
 [bboxes, confidences, image_ids] = ...
     run_detector(test_data_path, svmClassifier, hog_template_size,hog_cell_size);
 
+disp(size(confidences))
 
 %% Step 5. Evaluate and Visualize detections
 % These functions require ground truth annotations, and thus can only be
@@ -100,7 +101,7 @@ disp(['accuracy = ',num2str(accuracy),', recall = ',num2str(recall),...
 [gt_ids, gt_bboxes, gt_isclaimed, tp, fp, duplicate_detections] = ...
     evaluate_detections(bboxes, confidences, image_ids, test_label_path);
 
-%visualize_detections_by_image(bboxes, confidences, image_ids, tp, fp, test_data_path, test_label_path)
+visualize_detections_by_image(bboxes, confidences, image_ids, tp, fp, test_data_path, test_label_path)
 % visualize_detections_by_image_no_gt(bboxes, confidences, image_ids, test_data_path)
 
 % visualize_detections_by_confidence(bboxes, confidences, image_ids, test_data_path, test_label_path);
@@ -114,58 +115,58 @@ disp(['accuracy = ',num2str(accuracy),', recall = ',num2str(recall),...
 
 
 
-%% step 6. (optional) Implement PCA to reduce feature dimensionality and then train SVM.  
-% The feature size of hog can be computed as (hog_template_size/hog_cell_size)^2*31
-% This may be a long vector and may take a lot of time to train the classifer.
-% PCA allows you to reduce the dimensionality of feature by computing
-% principal axes that represent maximum variance. It may also improve the 
-% classifier performance.
-
-% You will code the function pca_components from scratch in this part. Follow the 
-% lecture slides discussed in class. pca_components will
-% take hog features of positive samples (feature dimension = N1) and
-% return a 'coeff' matrix of size N1xN2 (where N2 < N1).
-% Each column of coeff contains coefficients for one principal component.
-
-% In your code you should choose N2 optimally. Refer to your lectures which
-% explains N2 should be chosen such that the cumulative variance ratio > 0.9
-
-% YOU SHOULD CODE THE FUNCTION pca_components()
-% which computes coefficients for top N2 principal dimensions
-pca_coeff = pca_components(features_pos);
-
-% This step is done for you. New features are computed from the
-% from the principal coeffients
-features_pos = features_pos*pca_coeff;
-features_neg = features_neg*pca_coeff;
-
-% You have already done this part. SVM is retrained with the new features
-svmClassifier = svm_training(features_pos, features_neg);
-
-
-%You have already done this part. Performance measures.
-[accuracy,recall,tn_rate,precision] = ...
-    classifier_performance(svmClassifier,features_pos,features_neg);
-
-disp(['accuracy = ',num2str(accuracy),', recall = ',num2str(recall),...
-     ', tn_rate = ',num2str(tn_rate),', precision = ',num2str(precision)]);
-
- % YOU SHOULD CODE THE FUNCTION run_detector_pca(). This is exactly like 
- % the run_detector you coded above except for two differences.
- %  . it has an extra input argument pca_coeff which is the N1xN2 matrix
- %  computed above. Each column represents the coefficients of a principal
- %  axis
- % . the features determined for the test images should be of length N2
- % i.e. each hog feature of length N1 will be projected onto N2 dimensions.
- [bboxes, confidences, image_ids] = ...
-    run_detector_pca(test_data_path, svmClassifier, hog_template_size,hog_cell_size, pca_coeff);
-
-% Don't modify anything in 'evaluate_detections'!
-[gt_ids, gt_bboxes, gt_isclaimed, tp, fp, duplicate_detections] = ...
-    evaluate_detections(bboxes, confidences, image_ids, test_label_path);
-
-% visualize_detections_by_image(bboxes, confidences, image_ids, tp, fp, test_data_path, test_label_path)
-% visualize_detections_by_image_no_gt(bboxes, confidences, image_ids, test_data_path)
-
-% visualize_detections_by_confidence(bboxes, confidences, image_ids, test_data_path, test_label_path);
-
+% %% step 6. (optional) Implement PCA to reduce feature dimensionality and then train SVM.  
+% % The feature size of hog can be computed as (hog_template_size/hog_cell_size)^2*31
+% % This may be a long vector and may take a lot of time to train the classifer.
+% % PCA allows you to reduce the dimensionality of feature by computing
+% % principal axes that represent maximum variance. It may also improve the 
+% % classifier performance.
+% 
+% % You will code the function pca_components from scratch in this part. Follow the 
+% % lecture slides discussed in class. pca_components will
+% % take hog features of positive samples (feature dimension = N1) and
+% % return a 'coeff' matrix of size N1xN2 (where N2 < N1).
+% % Each column of coeff contains coefficients for one principal component.
+% 
+% % In your code you should choose N2 optimally. Refer to your lectures which
+% % explains N2 should be chosen such that the cumulative variance ratio > 0.9
+% 
+% % YOU SHOULD CODE THE FUNCTION pca_components()
+% % which computes coefficients for top N2 principal dimensions
+% pca_coeff = pca_components(features_pos);
+% 
+% % This step is done for you. New features are computed from the
+% % from the principal coeffients
+% features_pos = features_pos*pca_coeff;
+% features_neg = features_neg*pca_coeff;
+% 
+% % You have already done this part. SVM is retrained with the new features
+% svmClassifier = svm_training(features_pos, features_neg);
+% 
+% 
+% %You have already done this part. Performance measures.
+% [accuracy,recall,tn_rate,precision] = ...
+%     classifier_performance(svmClassifier,features_pos,features_neg);
+% 
+% disp(['accuracy = ',num2str(accuracy),', recall = ',num2str(recall),...
+%      ', tn_rate = ',num2str(tn_rate),', precision = ',num2str(precision)]);
+% 
+%  % YOU SHOULD CODE THE FUNCTION run_detector_pca(). This is exactly like 
+%  % the run_detector you coded above except for two differences.
+%  %  . it has an extra input argument pca_coeff which is the N1xN2 matrix
+%  %  computed above. Each column represents the coefficients of a principal
+%  %  axis
+%  % . the features determined for the test images should be of length N2
+%  % i.e. each hog feature of length N1 will be projected onto N2 dimensions.
+%  [bboxes, confidences, image_ids] = ...
+%     run_detector_pca(test_data_path, svmClassifier, hog_template_size,hog_cell_size, pca_coeff);
+% 
+% % Don't modify anything in 'evaluate_detections'!
+% [gt_ids, gt_bboxes, gt_isclaimed, tp, fp, duplicate_detections] = ...
+%     evaluate_detections(bboxes, confidences, image_ids, test_label_path);
+% 
+% % visualize_detections_by_image(bboxes, confidences, image_ids, tp, fp, test_data_path, test_label_path)
+% % visualize_detections_by_image_no_gt(bboxes, confidences, image_ids, test_data_path)
+% 
+% % visualize_detections_by_confidence(bboxes, confidences, image_ids, test_data_path, test_label_path);
+% 

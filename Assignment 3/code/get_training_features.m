@@ -1,6 +1,11 @@
 function [features_pos, features_neg] = get_training_features...
     (train_path_pos, train_path_neg,hog_template_size,hog_cell_size)
 
+M = load('features_pos.mat');
+features_pos = M.features_pos;
+N = load('features_neg.mat');
+features_neg = N.features_neg;
+return 
 %This function returns the hog features of all positive examples and for
 %negative examples
 
@@ -118,7 +123,7 @@ num_samples = 10000;
 sample_count = 0;
 % different scales used for extracting, can be changed
 scales = [.5, 1, 1.5, 2];
-
+%scales = [.1, .2, .3, .4, .5, .75, 1, 1.25, 1.5, 1.75, 2];
 % initialize 
 features_neg = zeros(num_samples, (hog_template_size / hog_cell_size)^2 * 31);
     
@@ -127,8 +132,10 @@ while sample_count < num_samples
     rand_img_index = random('unid', num_images);
     rand_img = imread(strcat(image_files(rand_img_index).folder,...
         '\', image_files(rand_img_index).name));
-    % convert selected image to grayscale
-    rand_img = rgb2gray(rand_img);
+    % convert selected image to grayscale if it's rgb
+    if size(rand_img, 3) == 3
+        rand_img = rgb2gray(rand_img);
+    end
     
     % take windows for different scales of randomly selected image
     for scale = scales
@@ -169,6 +176,9 @@ while sample_count < num_samples
         end
     end
 end
+
+% save('features_pos.mat', 'features_pos')
+% save('features_neg.mat', 'features_neg')
 
 end
 
