@@ -149,32 +149,37 @@ for i = 1:30
     scale = scale * 0.9;
     % scale the image
     scaled_img = imresize(img, scale);
-    % calculate the hog for whole scaled image
-    hog = vl_hog(im2single(scaled_img), hog_cell_size);
-    % get dimensions of hog matrix
-    [size_y, size_x, ~] = size(hog);
-    
-    % iterate over all patches
-    for x = 1:(size_x - size_patch + 1)
-        for y = 1:(size_y - size_patch + 1)
-            % get hog of the patch from hog of the image
-            hog_of_patch = hog(y:y+size_patch-1, x:x+size_patch-1, :);
-            % vectorize the hog for multiplication
-            hog_row_vector = hog_of_patch(:)';
-            % check for face detection      
-            confidence = hog_row_vector * w + b;
-            if confidence >= 1
-                cur_bboxes = [1 + (x-1)*hog_cell_size/scale,...
-                    1+(y-1)*hog_cell_size/scale,...
-                    (hog_template_size+(x-1)*hog_cell_size)/scale,...
-                    (hog_template_size+(y-1)*hog_cell_size)/scale...
-                    ; cur_bboxes];
-                cur_confidences = [ confidence ; cur_confidences];
-            end
-            
-        end
-    end
+   
+    for pad_x = 1:hog_cell_size-1
+        for pad_y = 1:hog_cell_size-1
+            % calculate the hog for whole scaled image
+            hog = vl_hog(im2single(scaled_img(pad_x:end, pad_y:end)),...
+                hog_cell_size);
+            % get dimensions of hog matrix
+            [size_y, size_x, ~] = size(hog);
 
+            % iterate over all patches
+            for x = 1:(size_x - size_patch + 1)
+                for y = 1:(size_y - size_patch + 1)
+                    % get hog of the patch from hog of the image
+                    hog_of_patch = hog(y:y+size_patch-1, x:x+size_patch-1, :);
+                    % vectorize the hog for multiplication
+                    hog_row_vector = hog_of_patch(:)';
+                    % check for face detection      
+                    confidence = hog_row_vector * w + b;
+                    if confidence >= 2
+                        cur_bboxes = [pad_x + (x-1)*hog_cell_size/scale,...
+                            pad_y+(y-1)*hog_cell_size/scale,...
+                            pad_x-1+(hog_template_size+(x-1)*hog_cell_size)/scale,...
+                            pad_y-1+(hog_template_size+(y-1)*hog_cell_size)/scale...
+                            ; cur_bboxes];
+                        cur_confidences = [ confidence ; cur_confidences];
+                    end
+
+                end
+            end
+        end    
+    end
 end
     
 
