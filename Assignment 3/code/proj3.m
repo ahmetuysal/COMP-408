@@ -15,7 +15,9 @@ data_path = '../data/';
 train_path_pos = fullfile(data_path, 'caltech_faces/Caltech_CropFaces'); %Positive training examples. 36x36 head crops
 train_path_neg = fullfile(data_path, 'train_non_face_scenes'); %We can mine random or hard negatives from here
 test_data_path = fullfile(data_path,'test_scenes/test_jpg'); %CMU+MIT test scenes
+%test_data_path = fullfile(data_path,'yyemez');
 test_label_path = fullfile(data_path,'test_scenes/ground_truth_bboxes.txt'); %the ground truth face locations in the test set
+%test_label_path = fullfile(data_path,'yyemez/ground_truth_bboxes.txt'); %the ground truth face locations in the test set
 
 % The faces are 36x36 pixels. So we will take the hog template size as
 % 36 and hog cell size as 6. You can test for different cell sizes as bonus.

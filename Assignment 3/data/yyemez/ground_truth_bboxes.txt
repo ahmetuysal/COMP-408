@@ -1,0 +1,4 @@
+yyemez1.jpg 72 36 131 116
+yyemez2.jpg 61 17 175 169
+yyemez3.jpg 23 21 173 231
+yyemez4.jpg 50 27 141 133

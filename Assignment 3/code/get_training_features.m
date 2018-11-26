@@ -63,12 +63,29 @@ end
 % create affine2d objects used for warping
 % for reflecting
 tform_reflection = affine2d([ -1 0 0; 0 1 0; 0 0 1]);
-tform_shear = affine2d( [1 .5 0; 0 1 0; 0 0 1]);
+tform_shear = affine2d([1 .5 0; 0 1 0; 0 0 1]);
+tform_shear2 = affine2d([1 .25 0; .25 1 0; 0 0 1]);
+tform_shear3 = affine2d([1 -.5 0; 0 1 0; 0 0 1]);
+tform_shear4 = affine2d([1 -.25 0; -.25 1 0; 0 0 1]);
+tform_shear_reflect = affine2d([-1 .5 0; 0 1 0; 0 0 1]);
+tform_shear_reflect2 = affine2d([-1 -.3 0; .25 1 0; 0 0 1]);
+
 tform = affine2d([ 0.5*cos(pi/4) sin(pi/4)     0;
                   -sin(pi/4)     0.5*cos(pi/4) 0;
                    0             0             1]);
                
-transforms = [tform_reflection, tform_shear, tform];
+transforms = [tform_reflection, tform_shear, tform_shear2, tform_shear3,...
+    tform_shear4, tform_shear_reflect, tform_shear_reflect2, tform];
+
+% %% Test area for warping
+% 
+% for i = 1:length(transforms)
+%     transform = transforms(i);
+%     warper = images.geotrans.Warper(transform, size(first_img));
+%     warped_image = warp(warper, face_images(:,:,1));
+%     warped_image = imresize(warped_image, [36, 36]);
+%     imshow(warped_image)
+% end
 
 % initialize features_pos with zeros
 features_pos = zeros(num_images * (1 + length(transforms))...
@@ -84,7 +101,7 @@ end
 
 % iterate over all transforms and add HoG for warped faces
 for i = 1:length(transforms)
-    transform = transforms(1);
+    transform = transforms(i);
     warper = images.geotrans.Warper(transform, size(first_img));
     for j = 1:num_images
         % calculate the warped image
@@ -117,12 +134,12 @@ end
 
 image_files = dir( fullfile( train_path_neg, '*.jpg' ));
 num_images = length(image_files);
-num_samples = 10000;
+num_samples = 200000;
 
 % counter for stopping at num_samples
 sample_count = 0;
 % different scales used for extracting, can be changed
-scales = [.5, 1, 1.5, 2];
+scales = [.25, .5, 1, 1.5, 2];
 %scales = [.1, .2, .3, .4, .5, .75, 1, 1.25, 1.5, 1.75, 2];
 % initialize 
 features_neg = zeros(num_samples, (hog_template_size / hog_cell_size)^2 * 31);
@@ -177,8 +194,8 @@ while sample_count < num_samples
     end
 end
 
-% save('features_pos.mat', 'features_pos')
-% save('features_neg.mat', 'features_neg')
+ save('features_pos.mat', 'features_pos')
+ save('features_neg.mat', 'features_neg')
 
 end
 
