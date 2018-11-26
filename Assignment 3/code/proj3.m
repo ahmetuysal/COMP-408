@@ -14,6 +14,7 @@ clear
 data_path = '../data/'; 
 train_path_pos = fullfile(data_path, 'caltech_faces/Caltech_CropFaces'); %Positive training examples. 36x36 head crops
 train_path_neg = fullfile(data_path, 'train_non_face_scenes'); %We can mine random or hard negatives from here
+%test_data_path = fullfile(data_path, 'extra_test_scenes');
 test_data_path = fullfile(data_path,'test_scenes/test_jpg'); %CMU+MIT test scenes
 %test_data_path = fullfile(data_path,'yyemez');
 test_label_path = fullfile(data_path,'test_scenes/ground_truth_bboxes.txt'); %the ground truth face locations in the test set
@@ -104,9 +105,9 @@ disp(size(confidences))
     evaluate_detections(bboxes, confidences, image_ids, test_label_path);
 
 visualize_detections_by_image(bboxes, confidences, image_ids, tp, fp, test_data_path, test_label_path)
-% visualize_detections_by_image_no_gt(bboxes, confidences, image_ids, test_data_path)
+%visualize_detections_by_image_no_gt(bboxes, confidences, image_ids, test_data_path)
 
-% visualize_detections_by_confidence(bboxes, confidences, image_ids, test_data_path, test_label_path);
+%visualize_detections_by_confidence(bboxes, confidences, image_ids, test_data_path, test_label_path);
 
 % performance to aim for
 % random (stater code) 0.001 AP
