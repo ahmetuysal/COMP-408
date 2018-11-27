@@ -25,7 +25,7 @@ test_label_path = fullfile(data_path,'test_scenes/ground_truth_bboxes.txt'); %th
 % Just make sure hog_template_size is divisible by hog_cell_size
 
 hog_template_size = 36;
-hog_cell_size = 6;
+hog_cell_size = 3;
 % TODO try with 3, 4, 9, 12, 18
 
 %% Step 1. Load positive training crops and random negative examples
