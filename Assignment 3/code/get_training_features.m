@@ -1,11 +1,11 @@
 function [features_pos, features_neg] = get_training_features...
     (train_path_pos, train_path_neg,hog_template_size,hog_cell_size)
 
-% M = load('features_pos.mat');
-% features_pos = M.features_pos;
-% N = load('features_neg.mat');
-% features_neg = N.features_neg;
-% return 
+M = load('features_pos.mat');
+features_pos = M.features_pos;
+N = load('features_neg.mat');
+features_neg = N.features_neg;
+return 
 %This function returns the hog features of all positive examples and for
 %negative examples
 
@@ -134,7 +134,7 @@ end
 
 image_files = dir( fullfile( train_path_neg, '*.jpg' ));
 num_images = length(image_files);
-num_samples = 100000;
+num_samples = 65000;
 
 % counter for stopping at num_samples
 sample_count = 0;

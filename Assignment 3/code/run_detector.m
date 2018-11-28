@@ -134,8 +134,6 @@ if size(img, 3) == 3
     img = rgb2gray(img);
 end
 
-% different scales used for extracting, can be changed
-
 % calculate the size of patch based on template and cell sizes
 size_patch = hog_template_size / hog_cell_size;
 
@@ -145,7 +143,7 @@ b = svmClassifier.bias;
 
 scale = 1.0;
 % iterate over all scales
-for i = 1:30
+for i = 1:20
     scale = scale * 0.9;
     % scale the image
     scaled_img = imresize(img, scale);
@@ -163,7 +161,7 @@ for i = 1:30
             hog_row_vector = hog_of_patch(:)';
             % check for face detection      
             confidence = hog_row_vector * w + b;
-            if confidence >= 1
+            if confidence >= 1.4
                 cur_bboxes = [1 + (x-1)*hog_cell_size/scale,...
                     1+(y-1)*hog_cell_size/scale,...
                     (hog_template_size+(x-1)*hog_cell_size)/scale,...

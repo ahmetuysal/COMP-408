@@ -50,16 +50,16 @@ for i = 1:num_images
     % you an example of how to call the function. This part of the code needs
     % to be commented out when you write your own function.
     
-    [cur_confidences,cur_bboxes] =...
-        PlaceHolder(img, svmClassifier, hog_template_size,hog_cell_size);
+%     [cur_confidences,cur_bboxes] =...
+%         PlaceHolder(img, svmClassifier, hog_template_size,hog_cell_size);
     
     
     % You will be coding the Detector() function. It has a similar
     % function definition as that of PlaceHolder().
     
     %  Complete the function Detector() and uncomment the line below
-    %[cur_confidences,cur_bboxes] =...
-    %    Detector(img, svmClassifier, hog_template_size,hog_cell_size);
+    [cur_confidences,cur_bboxes] =...
+       Detector(img, svmClassifier, hog_template_size,hog_cell_size, pca_coeff);
     
     cur_image_ids = cell(0,1);
     cur_image_ids(1:size(cur_bboxes,1)) = {test_scenes(i).name}; 
@@ -105,7 +105,7 @@ end
 
 
 function [cur_confidences,cur_bboxes] = ...
-    Detector(img, svmClassifier, hog_template_size,hog_cell_size)
+    Detector(img, svmClassifier, hog_template_size,hog_cell_size, pca_coeff)
 
 
 % Your code should first convert each test image to grayscale if
@@ -129,12 +129,54 @@ function [cur_confidences,cur_bboxes] = ...
 
 cur_bboxes = zeros(0,4);
 cur_confidences = zeros(0,1);
-%==============================================================
 
-%       YOUR CODE HERE
+% convert image to grayscale if it's rgb
+if size(img, 3) == 3
+    img = rgb2gray(img);
+end
 
-%==============================================================
+% calculate the size of patch based on template and cell sizes
+size_patch = hog_template_size / hog_cell_size;
 
+% extract weights and bias
+w = svmClassifier.weights;
+b = svmClassifier.bias;
+
+scale = 1.0;
+% iterate over all scales
+for i = 1:20
+    scale = scale * 0.9;
+    % scale the image
+    scaled_img = imresize(img, scale);
+    % calculate the hog for whole scaled image
+    hog = vl_hog(im2single(scaled_img), hog_cell_size);
+        
+    % get dimensions of hog matrix
+    [size_y, size_x, ~] = size(hog);
+    
+    % iterate over all patches
+    for x = 1:(size_x - size_patch + 1)
+        for y = 1:(size_y - size_patch + 1)
+            % get hog of the patch from hog of the image
+            hog_of_patch = hog(y:y+size_patch-1, x:x+size_patch-1, :);
+            % vectorize the hog for multiplication
+            hog_row_vector = hog_of_patch(:)';
+            %
+            hog_row_vector = hog_row_vector * pca_coeff;
+            % check for face detection      
+            confidence = hog_row_vector * w + b;
+            if confidence >= 1.4
+                cur_bboxes = [1 + (x-1)*hog_cell_size/scale,...
+                    1+(y-1)*hog_cell_size/scale,...
+                    (hog_template_size+(x-1)*hog_cell_size)/scale,...
+                    (hog_template_size+(y-1)*hog_cell_size)/scale...
+                    ; cur_bboxes];
+                cur_confidences = [ confidence ; cur_confidences];
+            end
+            
+        end
+    end
+end
 
 end
 
