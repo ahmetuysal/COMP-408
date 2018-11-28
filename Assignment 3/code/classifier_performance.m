@@ -38,8 +38,6 @@ true_negative = 0;
 w = svmClassifier.weights;
 b = svmClassifier.bias;
 
-disp(features_pos(1, :) * w)
-
 % check for positive images
 for i = 1:length(features_pos)
    if features_pos(i, :) * w + b >= 0

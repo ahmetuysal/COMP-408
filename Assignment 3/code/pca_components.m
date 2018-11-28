@@ -51,7 +51,6 @@ cumsums = cumsum(eig_values);
 % calculate how many eigen vectors to take
 index = 1;
 while cumsums(index) < threshold * cumsums(end)
-    disp(cumsums(index))
     index = index + 1;
 end
 % initialize pca_coefficient matrix with zeros

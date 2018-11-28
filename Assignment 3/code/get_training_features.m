@@ -1,11 +1,11 @@
 function [features_pos, features_neg] = get_training_features...
     (train_path_pos, train_path_neg,hog_template_size,hog_cell_size)
 
-M = load('features_pos.mat');
-features_pos = M.features_pos;
-N = load('features_neg.mat');
-features_neg = N.features_neg;
-return 
+% M = load('features_pos.mat');
+% features_pos = M.features_pos;
+% N = load('features_neg.mat');
+% features_neg = N.features_neg;
+% return 
 %This function returns the hog features of all positive examples and for
 %negative examples
 
@@ -75,7 +75,9 @@ tform = affine2d([ 0.5*cos(pi/4) sin(pi/4)     0;
                    0             0             1]);
                
 transforms = [tform_reflection, tform_shear, tform_shear2, tform_shear3,...
-    tform_shear4, tform_shear_reflect, tform_shear_reflect2, tform];
+   tform_shear4, tform_shear_reflect, tform_shear_reflect2, tform];
+
+%transforms = [];
 
 % %% Test area for warping
 % 

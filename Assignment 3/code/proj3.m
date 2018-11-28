@@ -12,8 +12,8 @@ clear
 [~,~,~] = mkdir('visualizations');
 
 data_path = '../data/';
-train_path_pos = fullfile(data_path, 'lfw_faces'); %Positive training examples. 36x36 head crops
-%train_path_pos = fullfile(data_path, 'caltech_faces/Caltech_CropFaces'); %Positive training examples. 36x36 head crops
+%train_path_pos = fullfile(data_path, 'lfw_faces'); %Positive training examples. 36x36 head crops
+train_path_pos = fullfile(data_path, 'caltech_faces/Caltech_CropFaces'); %Positive training examples. 36x36 head crops
 train_path_neg = fullfile(data_path, 'train_non_face_scenes'); %We can mine random or hard negatives from here
 %test_data_path = fullfile(data_path, 'extra_test_scenes');
 test_data_path = fullfile(data_path,'test_scenes/test_jpg'); %CMU+MIT test scenes
@@ -94,7 +94,6 @@ disp(['accuracy = ',num2str(accuracy),', recall = ',num2str(recall),...
 [bboxes, confidences, image_ids] = ...
     run_detector(test_data_path, svmClassifier, hog_template_size,hog_cell_size);
 
-disp(size(confidences))
 
 %% Step 5. Evaluate and Visualize detections
 % These functions require ground truth annotations, and thus can only be
@@ -105,10 +104,12 @@ disp(size(confidences))
 [gt_ids, gt_bboxes, gt_isclaimed, tp, fp, duplicate_detections] = ...
     evaluate_detections(bboxes, confidences, image_ids, test_label_path);
 
-%visualize_detections_by_image(bboxes, confidences, image_ids, tp, fp, test_data_path, test_label_path)
+visualize_detections_by_image(bboxes, confidences, image_ids, tp, fp, test_data_path, test_label_path)
 %visualize_detections_by_image_no_gt(bboxes, confidences, image_ids, test_data_path)
 
 %visualize_detections_by_confidence(bboxes, confidences, image_ids, test_data_path, test_label_path);
+
+%disp(sort(confidences, 'descend'))
 
 % performance to aim for
 % random (stater code) 0.001 AP
@@ -155,22 +156,22 @@ svmClassifier = svm_training(features_pos, features_neg);
 disp(['accuracy = ',num2str(accuracy),', recall = ',num2str(recall),...
      ', tn_rate = ',num2str(tn_rate),', precision = ',num2str(precision)]);
 
-%  % YOU SHOULD CODE THE FUNCTION run_detector_pca(). This is exactly like 
-%  % the run_detector you coded above except for two differences.
-%  %  . it has an extra input argument pca_coeff which is the N1xN2 matrix
-%  %  computed above. Each column represents the coefficients of a principal
-%  %  axis
-%  % . the features determined for the test images should be of length N2
-%  % i.e. each hog feature of length N1 will be projected onto N2 dimensions.
-%  [bboxes, confidences, image_ids] = ...
-%     run_detector_pca(test_data_path, svmClassifier, hog_template_size,hog_cell_size, pca_coeff);
-% 
-% % Don't modify anything in 'evaluate_detections'!
-% [gt_ids, gt_bboxes, gt_isclaimed, tp, fp, duplicate_detections] = ...
-%     evaluate_detections(bboxes, confidences, image_ids, test_label_path);
-% 
-% % visualize_detections_by_image(bboxes, confidences, image_ids, tp, fp, test_data_path, test_label_path)
-% % visualize_detections_by_image_no_gt(bboxes, confidences, image_ids, test_data_path)
-% 
-% % visualize_detections_by_confidence(bboxes, confidences, image_ids, test_data_path, test_label_path);
+ % YOU SHOULD CODE THE FUNCTION run_detector_pca(). This is exactly like 
+ % the run_detector you coded above except for two differences.
+ %  . it has an extra input argument pca_coeff which is the N1xN2 matrix
+ %  computed above. Each column represents the coefficients of a principal
+ %  axis
+ % . the features determined for the test images should be of length N2
+ % i.e. each hog feature of length N1 will be projected onto N2 dimensions.
+ [bboxes, confidences, image_ids] = ...
+    run_detector_pca(test_data_path, svmClassifier, hog_template_size,hog_cell_size, pca_coeff);
+
+% Don't modify anything in 'evaluate_detections'!
+[gt_ids, gt_bboxes, gt_isclaimed, tp, fp, duplicate_detections] = ...
+    evaluate_detections(bboxes, confidences, image_ids, test_label_path);
+
+% visualize_detections_by_image(bboxes, confidences, image_ids, tp, fp, test_data_path, test_label_path)
+% visualize_detections_by_image_no_gt(bboxes, confidences, image_ids, test_data_path)
+
+% visualize_detections_by_confidence(bboxes, confidences, image_ids, test_data_path, test_label_path);
 
